@@ -1,15 +1,10 @@
 #pragma once
-#include <cassert>
 #include <cctype>
-#include "iostream"
 
 #define NUM_LETTERS 26
 
 // don't ask why there is an F prefixed to the
 // type; its simply the coding standard for unreal
-
-// Represents a node in the prefix tree; Only allows the 26 alphabets.
-typedef struct FPrefixTreeNode FPrefixTreeNode;
 
 /**
  * Standard node for a prefix tree for english words,
@@ -23,76 +18,37 @@ private:
 	char Letter;
 	// array of children, one for each letter
 	FPrefixTreeNode* Children[NUM_LETTERS];
+
+public:
 	bool IsWord = false;
+	
+	explicit FPrefixTreeNode(const char Letter);
 
-public: 
-	explicit FPrefixTreeNode(const char Letter)
-	{
-		assert(std::isalpha(Letter));
-		this->Letter = std::tolower(Letter);
+	void AddChildIfNull(const char ChildLetter);
 
-		for (int i = 0; i < NUM_LETTERS; i++) Children[i] = nullptr;
-	}
+	FPrefixTreeNode* GetChild(const char ChildLetter) const;
 
-	~FPrefixTreeNode()
-	{
-		for (const FPrefixTreeNode* Child : Children) delete Child;
-	}
+	void PrintLetter() const;
 
-	void AddChildIfNull(const char Letter)
-	{
-		// get relative position of child
-		if (const int Index = LetterToIndex(Letter); !Children[Index])
-		{
-			FPrefixTreeNode Child = FPrefixTreeNode(Letter);
-			Children[Index] = &Child;
-		}
-	}
+	char GetLetter() const;
 
-	FPrefixTreeNode* GetChild(const char Letter) const
-	{
-		const int Index = LetterToIndex(Letter);
-		return Children[Index];
-	}
+	void DeleteChild(const char ChildLetter);
 
-	void PrintLetter() const
-	{
-		std::cout << Letter;
-	}
+	bool IsPrefixTo(const char ChildLetter) const;
 
-	char GetLetter() const
-	{
-		return Letter;
-	}
+	bool IsLeafNode() const;
 
-	void SetAsWord()
-	{
-		IsWord = true;
-	}
-
-	static int LetterToIndex(const char Letter)
-	{
-		return static_cast<int>(Letter) - 'a';
-	}
+	static int LetterToIndex(const char Letter);
 };
 
 struct FPrefixTree
 {
-	// represents the root of the tree, similar to how each
-	// node has an array of children
+	// represents the root of the tree; initialised with A as placeholder
 	FPrefixTreeNode Root = FPrefixTreeNode('a');
+	
+	void InsertWord(const std::string& Word);
 
-public:
-	void InsertWord(char* Word)
-	{
-		FPrefixTreeNode* Current = &Root;
-		
-		for (const char Letter : Word)
-		{
-			if (Letter == '\0') continue;
-			Current->AddChildIfNull(Letter);
-			Current = Current->GetChild(Letter);
-		}
-		Current->SetAsWord();
-	}
+	void DeleteWord(const std::string& Word);
+
+	bool Contains(const std::string& Word) const;
 };

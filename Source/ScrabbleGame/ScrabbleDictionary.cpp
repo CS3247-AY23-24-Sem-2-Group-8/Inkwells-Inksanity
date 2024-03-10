@@ -1,25 +1,26 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ScrabbleDictionary.h"
 #include "Kismet/KismetStringLibrary.h"
+#include <iostream>
 
+// constructor but not sure if it needs to be used
 UScrabbleDictionary::UScrabbleDictionary()
 {
 	
 }
 
-UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(FString FileName, int32 MinWordLength)
+UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FString FileName, const int32 MinWordLength)
 {
 	UScrabbleDictionary* Dict = NewObject<UScrabbleDictionary>();
 	FString ParsedText;
-	FString Path = FPaths::ProjectContentDir() + FileName;
-	const TCHAR* PathName = *(Path);
+	const FString Path = FPaths::ProjectContentDir() + FileName;
 
 	// fails if the specified path name does not exist
-	if (!FFileHelper::LoadFileToString(ParsedText, PathName))
+	if (const TCHAR* PathName = *(Path); !FFileHelper::LoadFileToString(ParsedText, PathName))
 	{
-		
+		std::cout << "bruh" << std::endl;
+		return Dict;
 	}
 
 	// create an array of words from the text
@@ -27,15 +28,16 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(FString Fi
 
 	for (FString& Word : ParsedWords)
 	{
-		if (Word.Len() < MinWordLength)
-			continue;
+		if (Word.Len() < MinWordLength || Word.Len() > MAX_WORD_LENGTH) continue;
+		
+		Dict->Trie.InsertWord(TCHAR_TO_ANSI(*Word));
 	}
 
 	return Dict;
 }
 
-bool UScrabbleDictionary::IsValidWord(FString Word)
+bool UScrabbleDictionary::IsValidWord(const FString Word) const
 {
-	return true;
+	return Trie.Contains(TCHAR_TO_ANSI(*Word));
 }
 
