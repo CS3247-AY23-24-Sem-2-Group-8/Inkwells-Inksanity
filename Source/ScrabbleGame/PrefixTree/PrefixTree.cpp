@@ -54,7 +54,7 @@ void FPrefixTreeNode::DeleteChild(const char ChildLetter)
 
 bool FPrefixTreeNode::IsPrefixTo(const char ChildLetter) const 
 {
-	return Children[LetterToIndex(ChildLetter)];
+	return Children[LetterToIndex(ChildLetter)] != NULL;
 }
 
 // a leaf is a node that has no additional children
