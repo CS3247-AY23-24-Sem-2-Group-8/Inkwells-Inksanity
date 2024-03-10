@@ -1,5 +1,6 @@
 #include "PrefixTree.h"
 #include <cassert>
+#include <cctype>
 #include "iostream"
 #include "stack"
 
@@ -8,22 +9,21 @@ FPrefixTreeNode::FPrefixTreeNode(const char Letter)
 {
 	assert(std::isalpha(Letter));
 	this->Letter = std::tolower(Letter);
-
-	for (int i = 0; i < NUM_LETTERS; i++) Children[i] = nullptr;
 }
 
-// FPrefixTreeNode::~FPrefixTreeNode()
-// {
-// 	for (const FPrefixTreeNode* Child : Children) delete Child;
-// }
+FPrefixTreeNode::~FPrefixTreeNode()
+{
+	for (const FPrefixTreeNode* Child : Children) delete Child;
+}
 
 void FPrefixTreeNode::AddChildIfNull(const char ChildLetter)
 {
 	// get relative position of child
 	if (const int Index = LetterToIndex(ChildLetter); !Children[Index])
 	{
-		FPrefixTreeNode Child = FPrefixTreeNode(ChildLetter);
-		Children[Index] = &Child;
+		if (!isalpha(ChildLetter)) return;
+		FPrefixTreeNode* Child = new FPrefixTreeNode(ChildLetter);
+		Children[Index] = Child;
 	}
 }
 
@@ -54,7 +54,7 @@ void FPrefixTreeNode::DeleteChild(const char ChildLetter)
 
 bool FPrefixTreeNode::IsPrefixTo(const char ChildLetter) const 
 {
-	return !Children[LetterToIndex(ChildLetter)];
+	return Children[LetterToIndex(ChildLetter)];
 }
 
 // a leaf is a node that has no additional children
@@ -70,17 +70,22 @@ bool FPrefixTreeNode::IsLeafNode() const
 
 int FPrefixTreeNode::LetterToIndex(const char Letter)
 {
-	return static_cast<int>(Letter) - 'a';
+	return std::tolower(Letter) - 'a';
 }
 
 // FPrefixTree functions
+FPrefixTree::FPrefixTree()
+{
+	
+}
+
 void FPrefixTree::InsertWord(const std::string& Word)
 {
 	FPrefixTreeNode* Current = &Root;
 	
 	for (const char Letter : Word)
 	{
-		if (Letter == '\0') continue;
+		if (!std::isalpha(Letter)) continue;
 
 		Current->AddChildIfNull(Letter);
 		Current = Current->GetChild(Letter);
@@ -132,4 +137,3 @@ bool FPrefixTree::Contains(const std::string& Word) const
 	}
 	return Current->IsWord;
 }
-

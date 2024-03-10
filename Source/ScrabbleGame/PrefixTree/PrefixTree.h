@@ -17,12 +17,14 @@ struct FPrefixTreeNode
 private:
 	char Letter;
 	// array of children, one for each letter
-	FPrefixTreeNode* Children[NUM_LETTERS];
-
+	FPrefixTreeNode* Children[NUM_LETTERS] = {nullptr};
+	
 public:
 	bool IsWord = false;
 	
 	explicit FPrefixTreeNode(const char Letter);
+
+	~FPrefixTreeNode();
 
 	void AddChildIfNull(const char ChildLetter);
 
@@ -45,6 +47,8 @@ struct FPrefixTree
 {
 	// represents the root of the tree; initialised with A as placeholder
 	FPrefixTreeNode Root = FPrefixTreeNode('a');
+	
+	FPrefixTree();
 	
 	void InsertWord(const std::string& Word);
 

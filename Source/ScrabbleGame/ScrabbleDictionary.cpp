@@ -7,7 +7,8 @@
 // constructor but not sure if it needs to be used
 UScrabbleDictionary::UScrabbleDictionary()
 {
-	
+	Trie = FPrefixTree();
+	UE_LOG(LogTemp, Warning, TEXT("Hello world"));
 }
 
 UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FString FileName, const int32 MinWordLength)
@@ -19,7 +20,6 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FStr
 	// fails if the specified path name does not exist
 	if (const TCHAR* PathName = *(Path); !FFileHelper::LoadFileToString(ParsedText, PathName))
 	{
-		std::cout << "bruh" << std::endl;
 		return Dict;
 	}
 
@@ -30,7 +30,7 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FStr
 	{
 		if (Word.Len() < MinWordLength || Word.Len() > MAX_WORD_LENGTH) continue;
 		
-		Dict->Trie.InsertWord(TCHAR_TO_ANSI(*Word));
+		Dict->Trie.InsertWord(TCHAR_TO_UTF8(*Word));
 	}
 
 	return Dict;
@@ -38,6 +38,6 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FStr
 
 bool UScrabbleDictionary::IsValidWord(const FString Word) const
 {
-	return Trie.Contains(TCHAR_TO_ANSI(*Word));
+	return Trie.Contains(TCHAR_TO_UTF8(*Word));
 }
 

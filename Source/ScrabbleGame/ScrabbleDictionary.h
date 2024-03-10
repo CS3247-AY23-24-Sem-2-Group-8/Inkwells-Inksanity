@@ -18,7 +18,7 @@ class SCRABBLEGAME_API UScrabbleDictionary : public UObject
 	GENERATED_BODY()
 	
 private:
-	FPrefixTree Trie = FPrefixTree();
+	FPrefixTree Trie;
 	
 public:
 	// should receive a text file with the words in sorted order preferably
