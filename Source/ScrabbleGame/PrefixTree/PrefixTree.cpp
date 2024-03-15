@@ -21,7 +21,7 @@ void FPrefixTreeNode::AddChildIfNull(const char ChildLetter)
 	// get relative position of child
 	if (const int Index = LetterToIndex(ChildLetter); !Children[Index])
 	{
-		if (!isalpha(ChildLetter)) return;
+		if (!std::isalpha(ChildLetter)) return;
 		FPrefixTreeNode* Child = new FPrefixTreeNode(ChildLetter);
 		Children[Index] = Child;
 	}

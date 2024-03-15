@@ -8,7 +8,6 @@
 UScrabbleDictionary::UScrabbleDictionary()
 {
 	Trie = FPrefixTree();
-	UE_LOG(LogTemp, Warning, TEXT("Hello world"));
 }
 
 UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FString FileName, const int32 MinWordLength)
