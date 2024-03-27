@@ -71,7 +71,7 @@ void FGridMap::CreatePaths(const uint32_t NumPaths)
 				EdgeList[PrevBlock] = std::vector<uint64_t>();
 			}
 
-			EdgeList.find(CurrentBlock)->second.push_back(CurrentBlock);
+			EdgeList.find(PrevBlock)->second.push_back(CurrentBlock);
 			
 			PrevBlock = CurrentBlock;
 		}
