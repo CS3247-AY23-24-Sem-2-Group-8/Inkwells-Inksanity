@@ -2,7 +2,6 @@
 
 #include "ScrabbleDictionary.h"
 #include "Kismet/KismetStringLibrary.h"
-#include <iostream>
 
 // constructor but not sure if it needs to be used
 UScrabbleDictionary::UScrabbleDictionary()
