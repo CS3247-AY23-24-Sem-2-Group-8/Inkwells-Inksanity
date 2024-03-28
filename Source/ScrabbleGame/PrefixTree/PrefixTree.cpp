@@ -137,3 +137,17 @@ bool FPrefixTree::Contains(const std::string& Word) const
 	}
 	return Current->IsWord;
 }
+
+bool FPrefixTree::ContainsPrefix(const std::string& Prefix) const
+{
+	const FPrefixTreeNode* Current = &Root;
+	
+	for (const char Letter : Prefix)
+	{
+		if (Letter == '\0') continue;
+		if (!Current->IsPrefixTo(Letter)) return false;
+		
+		Current = Current->GetChild(Letter);
+	}
+	return true;
+}

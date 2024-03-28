@@ -42,14 +42,14 @@ void FGridMap::CreatePaths(const uint32_t NumPaths)
 	std::uniform_int_distribution<int> StartGenerator(0, Cols - 1);
 	std::uniform_int_distribution<int> NextSquare(-1, 1);
 
-	for (int i = 0; i < NumPaths; i++)
+	for (uint32_t i = 0; i < NumPaths; i++)
 	{
 		// randomly select a starting node path
-		int CurrentCol = StartGenerator(RandomNumberGenerator);
+		uint32_t CurrentCol = StartGenerator(RandomNumberGenerator);
 		uint64_t PrevBlock = HashBlock(0, CurrentCol);
 		NodeList.insert(PrevBlock);
 		
-		for (int CurrentRow = 1; CurrentRow < Rows; CurrentRow++)
+		for (uint32_t CurrentRow = 1; CurrentRow < Rows; CurrentRow++)
 		{
 			// find the index of the next square to travel to
 			CurrentCol += NextSquare(RandomNumberGenerator);
