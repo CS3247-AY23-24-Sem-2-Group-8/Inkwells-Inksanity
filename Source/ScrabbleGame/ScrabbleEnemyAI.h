@@ -25,7 +25,7 @@ struct FBoardTile
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(Blueprintable)
 class SCRABBLEGAME_API UScrabbleEnemyAI: public UObject
 {
 	GENERATED_BODY()
@@ -34,13 +34,16 @@ public:
 	~UScrabbleEnemyAI();
 	
 	UFUNCTION(BlueprintCallable, Category = "Scrabble AI")
-	static UScrabbleEnemyAI* InitialiseAI(double StopThreshold, UScrabbleDictionary* DictionaryReference, double SearchTimeLimit);
+	void InitialiseAI(double StopThreshold, UScrabbleDictionary* DictionaryReference, double SearchTimeLimit);
 	
 	UFUNCTION(BlueprintCallable, Category = "Scrabble AI")
 	void SetBoard(TArray<FBoardTile> Tiles);
 	
 	UFUNCTION(BlueprintCallable, Category = "Scrabble AI")
-	void GetNextAction(FString& SelectedCharacter, int& PointValue);
+	void GetNextAction();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Scrabble AI")
+	void OnFinish(const FString& SelectedCharacter, const int& PointValue);
 private:
 	UScrabbleDictionary* Dictionary;
 	double ThresholdToStop;
