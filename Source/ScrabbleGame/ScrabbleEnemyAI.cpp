@@ -11,13 +11,11 @@ UScrabbleEnemyAI::UScrabbleEnemyAI()
 	EnemyAI = nullptr;
 }
 
-UScrabbleEnemyAI* UScrabbleEnemyAI::InitialiseAI(double StopThreshold, UScrabbleDictionary* DictionaryReference, double SearchTimeLimit)
+void UScrabbleEnemyAI::InitialiseAI(double StopThreshold, UScrabbleDictionary* DictionaryReference, double SearchTimeLimit)
 {
-	UScrabbleEnemyAI* Ai = NewObject<UScrabbleEnemyAI>();
-	Ai->ThresholdToStop = StopThreshold;
-	Ai->Dictionary = DictionaryReference;
-	Ai->MaxTimeToSearch = SearchTimeLimit;
-	return Ai;
+	ThresholdToStop = StopThreshold;
+	Dictionary = DictionaryReference;
+	MaxTimeToSearch = SearchTimeLimit;
 }
 
 void UScrabbleEnemyAI::SetBoard(TArray<FBoardTile> Tiles)
@@ -34,19 +32,30 @@ void UScrabbleEnemyAI::SetBoard(TArray<FBoardTile> Tiles)
 	EnemyAI = new class EnemyAI(Board, ThresholdToStop, Dictionary, MaxTimeToSearch);
 }
 
-void UScrabbleEnemyAI::GetNextAction(FString& SelectedCharacter, int& PointValue)
+void UScrabbleEnemyAI::GetNextAction()
 {
-	const BoardAction* Action = EnemyAI->getNextAction();
-	if (Action == nullptr)
-	{
-		SelectedCharacter = "";
-		PointValue = -1;
-		return;
-	}
-	char String[2] = "\0";
-	String[0] = Action->selectedLetter;
-	SelectedCharacter = String;
-	PointValue = Action->pointValue;
+	FString SelectedCharacter = "";
+	int PointValue = -1;
+	if (Dictionary == nullptr || EnemyAI == nullptr) return OnFinish(SelectedCharacter, PointValue);
+
+	AsyncTask(ENamedThreads::AnyHiPriThreadNormalTask, [this] () {
+		/* Work on the TaskGraph */
+		if (this == nullptr) return;
+		FString SelectedCharacter = "";
+		int PointValue = -1;
+		const BoardAction* Action = EnemyAI->getNextAction();
+		if (Action == nullptr) return OnFinish(SelectedCharacter, PointValue);
+		
+		char String[2] = "\0";
+		String[0] = Action->selectedLetter;
+		SelectedCharacter = String;
+		PointValue = Action->pointValue;
+		OnFinish(SelectedCharacter, PointValue);
+	});
+}
+
+void UScrabbleEnemyAI::OnFinish_Implementation(const FString& SelectedCharacter, const int& PointValue)
+{
 }
 
 UScrabbleEnemyAI::~UScrabbleEnemyAI()
