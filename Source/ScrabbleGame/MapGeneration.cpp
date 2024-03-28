@@ -2,6 +2,7 @@
 
 #include "MapGeneration.h"
 #include "MapGenerator/GridMap.h"
+#include <iostream>
 
 void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, const int32 NumPaths,
                                          TArray<FVector2D>& Vertices, TArray<FVector2D>& Edges)
@@ -20,4 +21,20 @@ FVector2D UMapGeneration::TranslateToMapCoordinates(const FVector2D Point, const
 	const double Y = Point.Y + Midpoint.Y - 0.5 * Height;
 	
 	return FVector2D(X, Y);
+}
+
+int32 UMapGeneration::GenerateNodeType(const FVector2D Node, const TArray<int32> Probabilities)
+{
+	std::random_device DefaultSeed;
+	std::mt19937 NumberGenerator(DefaultSeed());
+
+	std::vector<double> Events(Probabilities.Num() + 1);
+	int32 StartNum = -1;
+	int32 Step = 1;
+
+	std::ranges::generate(Events.begin(), Events.end(),[&StartNum, &Step]{ return StartNum += Step; });
+
+	std::piecewise_constant_distribution<> EventSelector(Events.begin(), Events.end(),Probabilities.begin());
+	
+	return std::floor(EventSelector(NumberGenerator));
 }

@@ -22,4 +22,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
 	static FVector2D TranslateToMapCoordinates(const FVector2D Point, const FVector2D Midpoint,
 		const int32 Width, const int32 Height);
+
+	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
+	static int32 GenerateNodeType(const FVector2D Node, const TArray<int32> Probabilities);
 };
