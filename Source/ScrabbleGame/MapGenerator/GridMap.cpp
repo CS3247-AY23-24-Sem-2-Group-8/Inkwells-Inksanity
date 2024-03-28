@@ -5,8 +5,8 @@ FGridMap::FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width,
 {
 	this->Rows = Rows;
 	this->Cols = Cols;
-	this->BlockWidth = Width / Rows;
-	this->BlockHeight = Height / Cols;
+	this->BlockWidth = Width / Cols;
+	this->BlockHeight = Height / Rows;
 	this->RandomNumberGenerator.seed(DefaultSeed());
 
 	CreatePaths(NumPaths);
@@ -17,8 +17,8 @@ FGridMap::FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width,
 {
 	this->Rows = Rows;
 	this->Cols = Cols;
-	this->BlockWidth = Width / Rows;
-	this->BlockHeight = Height / Cols;
+	this->BlockWidth = Width / Cols;
+	this->BlockHeight = Height / Rows;
 	this->RandomNumberGenerator.seed(Seed);
 
 	CreatePaths(NumPaths);
@@ -97,8 +97,8 @@ std::tuple<TArray<FVector2D>, TArray<FVector2D>> FGridMap::GenerateGraph() const
 		const uint32_t Row = std::get<0>(Coords);
 		const uint32_t Col = std::get<1>(Coords);
 
-		const double XCoordinate = Row * BlockWidth + XCoordinateGenerator(Generator);
-		const double YCoordinate = Col * BlockHeight + YCoordinateGenerator(Generator);
+		const double XCoordinate = Col * BlockWidth + XCoordinateGenerator(Generator);
+		const double YCoordinate = Row * BlockHeight + YCoordinateGenerator(Generator);
 
 		IndexMap[NodeHash] = Vertices.Num();
 		Vertices.Add(FVector2D(XCoordinate, YCoordinate));

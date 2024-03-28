@@ -12,3 +12,12 @@ void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, 
 	Vertices = std::get<0>(Graph);
 	Edges = std::get<1>(Graph);
 }
+
+FVector2D UMapGeneration::TranslateToMapCoordinates(const FVector2D Point, const FVector2D Midpoint,
+	const int32 Width, const int32 Height)
+{
+	const double X = Point.X + Midpoint.X - 0.5 * Width;
+	const double Y = Point.Y + Midpoint.Y - 0.5 * Height;
+	
+	return FVector2D(X, Y);
+}
