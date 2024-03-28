@@ -1,24 +1,24 @@
 #include "GridMap.h"
 
-FGridMap::FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width,
-                   const double Height, const uint32_t NumPaths)
+FGridMap::FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width, const double Height,
+                   const double WidthScale, const double HeightScale, const uint32_t NumPaths)
 {
 	this->Rows = Rows;
 	this->Cols = Cols;
-	this->BlockWidth = Width / Cols;
-	this->BlockHeight = Height / Rows;
+	this->BlockWidth = WidthScale * Width / Cols;
+	this->BlockHeight = HeightScale * Height / Rows;
 	this->RandomNumberGenerator.seed(DefaultSeed());
 
 	CreatePaths(NumPaths);
 }
 
-FGridMap::FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width,
-		const double Height, const uint32_t NumPaths, const uint32_t Seed)
+FGridMap::FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width, const double Height,
+	const double WidthScale, const double HeightScale, const uint32_t NumPaths, const uint32_t Seed)
 {
 	this->Rows = Rows;
 	this->Cols = Cols;
-	this->BlockWidth = Width / Cols;
-	this->BlockHeight = Height / Rows;
+	this->BlockWidth = WidthScale * Width / Cols;
+	this->BlockHeight = HeightScale * Height / Rows;
 	this->RandomNumberGenerator.seed(Seed);
 
 	CreatePaths(NumPaths);
@@ -52,15 +52,11 @@ void FGridMap::CreatePaths(const uint32_t NumPaths)
 		for (uint32_t CurrentRow = 1; CurrentRow < Rows; CurrentRow++)
 		{
 			// find the index of the next square to travel to
-			CurrentCol += NextSquare(RandomNumberGenerator);
-			if (CurrentCol < 0)
+			if (const int32_t Increment = NextSquare(RandomNumberGenerator);
+				!(CurrentCol == 0 && Increment == -1) &&
+				!(CurrentCol == Cols - 1 && Increment == 1))
 			{
-				CurrentCol = 0;
-			}
-
-			if (CurrentCol >= Cols)
-			{
-				CurrentCol = Cols - 1;
+				CurrentCol += NextSquare(RandomNumberGenerator);
 			}
 
 			uint64_t CurrentBlock = HashBlock(CurrentRow, CurrentCol);
@@ -88,8 +84,8 @@ std::tuple<TArray<FVector2D>, TArray<FVector2D>> FGridMap::GenerateGraph() const
 
 	std::unordered_map<uint64_t, uint32_t> IndexMap = std::unordered_map<uint64_t, uint32_t>();
 	
-	std::uniform_real_distribution<> XCoordinateGenerator(0.0, BlockWidth);
-	std::uniform_real_distribution<> YCoordinateGenerator(0.0, BlockHeight);
+	std::uniform_real_distribution<> XCoordinateGenerator(0.25 * BlockWidth, 0.75 * BlockWidth);
+	std::uniform_real_distribution<> YCoordinateGenerator(0.25 * BlockHeight, 0.75 * BlockHeight);
 	
 	for (const uint64_t NodeHash : NodeList)
 	{

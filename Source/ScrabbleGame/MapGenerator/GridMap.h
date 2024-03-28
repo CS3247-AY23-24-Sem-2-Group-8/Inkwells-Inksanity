@@ -25,9 +25,11 @@ public:
 	
 	double BlockHeight;
 
-	FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width, const double Height, const uint32_t NumPaths);
+	FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width, const double Height,
+		const double WidthScale, const double HeightScale, const uint32_t NumPaths);
 
-	FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width, const double Height, const uint32_t NumPaths, const uint32_t Seed);
+	FGridMap(const uint32_t Rows, const uint32_t Cols, const double Width, const double Height,
+		const double WidthScale, const double HeightScale, const uint32_t NumPaths, const uint32_t Seed);
 
 	// gives a tuple of points and edges
 	std::tuple<TArray<FVector2D>, TArray<FVector2D>> GenerateGraph() const;
