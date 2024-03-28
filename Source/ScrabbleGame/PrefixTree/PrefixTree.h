@@ -55,4 +55,6 @@ struct FPrefixTree
 	void DeleteWord(const std::string& Word);
 
 	bool Contains(const std::string& Word) const;
+
+	bool ContainsPrefix(const std::string& Prefix) const;
 };
