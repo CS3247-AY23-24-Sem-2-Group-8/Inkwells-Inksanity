@@ -6,44 +6,44 @@
 
 struct BoardAction : Action
 {
-	char selectedLetter;
-	int pointValue;
+	char SelectedLetter;
+	int PointValue;
 
-	BoardAction(char selectedLetter, int pointValue)
+	BoardAction(const char SelectedLetter, const int PointValue)
 	{
-		this->selectedLetter = selectedLetter;
-		this->pointValue = pointValue;
+		this->SelectedLetter = SelectedLetter;
+		this->PointValue = PointValue;
 	}
 
-	bool operator ==(const Action& other) const override
+	virtual bool operator ==(const Action& Other) const override
 	{
-		const BoardAction& otherAction = (const BoardAction&) other;
+		const BoardAction& OtherAction = static_cast<const BoardAction&>(Other);
 		
-		return selectedLetter == otherAction.selectedLetter && pointValue == otherAction.pointValue;
+		return SelectedLetter == OtherAction.SelectedLetter && PointValue == OtherAction.PointValue;
 	}
 };
 
 struct BoardState : State
 {
-	std::string currentWord;
-	std::vector<std::pair<char, int>*> letters;
-	int pointValue;
+	std::string CurrentWord;
+	std::vector<std::pair<char, int>*> Letters;
+	int PointValue;
 
-	BoardState(std::string currentWord, const std::vector<std::pair<char, int>*>& letters, int pointValue = 0)
+	BoardState(const std::string& CurrentWord, const std::vector<std::pair<char, int>*>& Letters, const int PointValue = 0)
 	{
-		this->currentWord = currentWord;
-		this->letters = letters;
-		this->pointValue = pointValue;
+		this->CurrentWord = CurrentWord;
+		this->Letters = Letters;
+		this->PointValue = PointValue;
 	}
 
-	BoardState* result(const BoardAction* action)
+	BoardState* Result(const BoardAction* Action) const
 	{
-		if (letters.empty()) return nullptr; 
+		if (Letters.empty()) return nullptr;
 
-		std::pair<char, int>* Pair = nullptr;
-		for (auto CurrentPair: letters)
+		const std::pair<char, int>* Pair = nullptr;
+		for (const auto CurrentPair: Letters)
 		{
-			if (action != nullptr && CurrentPair->first != action->selectedLetter) continue;
+			if (Action != nullptr && CurrentPair->first != Action->SelectedLetter) continue;
 			
 			if (Pair == nullptr || CurrentPair->second > Pair->second)
 			{
@@ -56,23 +56,23 @@ struct BoardState : State
 		}
 		
 		std::vector<std::pair<char, int>*> NewLetters;
-		std::string NewWord = currentWord;
+		std::string NewWord = CurrentWord;
 
-		for (auto CurrentPair: letters)
+		for (auto CurrentPair: Letters)
 		{
 			if (CurrentPair == Pair) continue;
 			NewLetters.push_back(CurrentPair);
 		}
 
-		BoardState* newState = new BoardState(currentWord + Pair->first, NewLetters, pointValue + Pair->second);
-		return newState;
+		BoardState* NewState = new BoardState(CurrentWord + Pair->first, NewLetters, PointValue + Pair->second);
+		return NewState;
 	}
 
 	std::deque<BoardAction*>* Actions()
 	{
 		std::deque<BoardAction*>* Actions = new std::deque<BoardAction*>();
 
-		for (const auto CurrentPair : letters) {
+		for (const auto CurrentPair : Letters) {
 			BoardAction* Action = new BoardAction(CurrentPair->first, CurrentPair->second);
 			Actions->push_back(Action);
 		}
@@ -80,64 +80,65 @@ struct BoardState : State
 		return Actions;
 	}
 
-	bool isTerminal() const
+	bool IsTerminal() const
 	{
-		return this->letters.empty();
+		return this->Letters.empty();
 	}
 };
 
 class ScrabbleGameBoard : public Problem<BoardAction, BoardState>
 {
 public:
-	ScrabbleGameBoard(BoardState* initialState, BoardState* goalState = nullptr) : Problem(initialState, goalState) {}
+	ScrabbleGameBoard(BoardState* InitialState, BoardState* GoalState = nullptr) : Problem(InitialState, GoalState) {}
 
-	std::deque<BoardAction*>* actions(BoardState* State) override;
+	std::deque<BoardAction*>* Actions(BoardState* State) override;
 
-	BoardState* result(BoardState* state, BoardAction* Action) override;
+	BoardState* Result(BoardState* State, BoardAction* Action) override;
 
-	double value(BoardState* State) override;
+	double Value(BoardState* State) override;
 
-	double cost(BoardState* FromState, BoardAction* Action, BoardState* ToState) override;
+	double Cost(BoardState* FromState, BoardAction* Action, BoardState* ToState) override;
 
-	bool isGoal(const BoardState* State);
+	bool IsGoal(const BoardState* State);
 };
 
 
 class EnemyAI: public MCTSAgent<BoardAction, BoardState>
 {
 public:
-	EnemyAI(ScrabbleGameBoard* problem, double thresholdToStop, UScrabbleDictionary* dictionary, double maxTimeForSearch) : MCTSAgent(problem)
+	EnemyAI(ScrabbleGameBoard* Problem, const double ThresholdToStop, UScrabbleDictionary* Dictionary,
+		const double MaxTimeForSearch): MCTSAgent(Problem)
 	{
-		std::random_device rd;
-		this->rng = std::mt19937(rd());
-		this->problem = problem;
-		this->thresholdToStop = thresholdToStop;
-		this->dictionary = dictionary;
-		this->maxTimeForSearch = maxTimeForSearch;
-		this->currentState = problem->initialState;
+		std::random_device Rd;
+		this->RNG = std::mt19937(Rd());
+		this->Problem = Problem;
+		this->ThresholdToStop = ThresholdToStop;
+		this->Dictionary = Dictionary;
+		this->MaxTimeForSearch = MaxTimeForSearch;
+		this->CurrentState = Problem->InitialState;
 	}
 
-	BoardAction* search(BoardState* state) override;
+	BoardAction* Search(BoardState* State) override;
 
-	double ucb(MCTSNode<BoardAction, BoardState>* Node, double cost = 1.4) override;
+	double Ucb(MCTSNode<BoardAction, BoardState>* Node, double Confidence = 1.4) override;
 	
 	double Utility(const BoardState* State) const;
 
-	MCTSNode<BoardAction, BoardState>* select(MCTSNode<BoardAction, BoardState>* node) override;
+	MCTSNode<BoardAction, BoardState>* Select(MCTSNode<BoardAction, BoardState>* Node) override;
 
-	MCTSNode<BoardAction, BoardState>* expand(MCTSNode<BoardAction, BoardState>* node) override;
+	MCTSNode<BoardAction, BoardState>* Expand(MCTSNode<BoardAction, BoardState>* Node) override;
 
-	double simulate(MCTSNode<BoardAction, BoardState>* childNode) override;
+	double Simulate(MCTSNode<BoardAction, BoardState>* ChildNode) override;
 
-	void backprop(MCTSNode<BoardAction, BoardState>* node, double utility) override;
+	void Backprop(MCTSNode<BoardAction, BoardState>* Node, double Utility) override;
 
-	bool isTerminal(BoardState* node);
+	bool IsTerminal(const BoardState* Node) const;
 
 private:
-	ScrabbleGameBoard* problem;
-	double thresholdToStop;
-	UScrabbleDictionary* dictionary;
-	double maxTimeForSearch;
-	std::mt19937 rng;
+	ScrabbleGameBoard* Problem;
+	double ThresholdToStop;
+	UScrabbleDictionary* Dictionary;
+	double MaxTimeForSearch;
+	std::mt19937 RNG;
 };
 

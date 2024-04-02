@@ -11,7 +11,7 @@ UScrabbleEnemyAI::UScrabbleEnemyAI()
 	EnemyAI = nullptr;
 }
 
-void UScrabbleEnemyAI::InitialiseAI(double StopThreshold, UScrabbleDictionary* DictionaryReference, double SearchTimeLimit)
+void UScrabbleEnemyAI::InitialiseAI(const double StopThreshold, UScrabbleDictionary* DictionaryReference, const double SearchTimeLimit)
 {
 	ThresholdToStop = StopThreshold;
 	Dictionary = DictionaryReference;
@@ -34,23 +34,23 @@ void UScrabbleEnemyAI::SetBoard(TArray<FBoardTile> Tiles)
 
 void UScrabbleEnemyAI::GetNextAction()
 {
-	FString SelectedCharacter = "";
-	int PointValue = -1;
+	const FString SelectedCharacter = "";
+	constexpr int PointValue = -1;
 	if (Dictionary == nullptr || EnemyAI == nullptr) return OnFinish(SelectedCharacter, PointValue);
 
 	AsyncTask(ENamedThreads::AnyHiPriThreadNormalTask, [this] () {
 		/* Work on the TaskGraph */
 		if (this == nullptr) return;
-		FString SelectedCharacter = "";
-		int PointValue = -1;
-		const BoardAction* Action = EnemyAI->getNextAction();
-		if (Action == nullptr) return OnFinish(SelectedCharacter, PointValue);
+		FString Character = "";
+		int Value = -1;
+		const BoardAction* Action = EnemyAI->GetNextAction();
+		if (Action == nullptr) return OnFinish(Character, Value);
 		
 		char String[2] = "\0";
-		String[0] = Action->selectedLetter;
-		SelectedCharacter = String;
-		PointValue = Action->pointValue;
-		OnFinish(SelectedCharacter, PointValue);
+		String[0] = Action->SelectedLetter;
+		Character = String;
+		Value = Action->PointValue;
+		OnFinish(Character, Value);
 	});
 }
 
