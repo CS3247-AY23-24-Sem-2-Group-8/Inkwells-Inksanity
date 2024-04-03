@@ -49,7 +49,7 @@ void FGridMap::CreatePaths(const uint32_t NumPaths)
 		uint64_t PrevBlock = HashBlock(0, CurrentCol);
 		NodeList.insert(PrevBlock);
 		
-		for (uint32_t CurrentRow = 1; CurrentRow < Rows; CurrentRow++)
+		for (uint32_t CurrentRow = 1; CurrentRow < Rows - 1; CurrentRow++)
 		{
 			// find the index of the next square to travel to
 			if (const int32_t Increment = NextSquare(RandomNumberGenerator);
@@ -78,7 +78,7 @@ std::tuple<TArray<FVector2D>, TArray<FVector2D>> FGridMap::GenerateGraph() const
 {
 	TArray<FVector2D> Vertices = TArray<FVector2D>();
 	TArray<FVector2D> Edges = TArray<FVector2D>();
-	const FVector2D BossNode = FVector2D(BlockWidth * Rows * 0.5, (BlockHeight - 0.5) * Cols);
+	const FVector2D BossNode = FVector2D(BlockWidth * Cols * 0.5, BlockHeight * (Rows - 0.5));
 	Vertices.Add(BossNode);
 
 	std::random_device RandomDevice;
@@ -106,19 +106,19 @@ std::tuple<TArray<FVector2D>, TArray<FVector2D>> FGridMap::GenerateGraph() const
 	for (const auto& [Key, Value] : EdgeList)
 	{
 		const int FromIndex = IndexMap[Key];
-		std::tuple<uint32_t, uint32_t> Coords = UnhashBlock(Key);
-
-		// connect to boss node
-		if (const uint32_t Col = std::get<1>(Coords); Col == Cols - 1)
-		{
-			Edges.Add(FVector2D(FromIndex, 0));
-		}
 		
 		for (const uint64_t Node : Value)
 		{
 			const int ToIndex = IndexMap[Node];
 
 			Edges.Add(FVector2D(FromIndex, ToIndex));
+			
+			// connect to boss node
+			std::tuple<uint32_t, uint32_t> Coords = UnhashBlock(Node);
+			if (const uint32_t Row = std::get<0>(Coords); Row == Rows - 2)
+			{
+				Edges.Add(FVector2D(ToIndex, 0));
+			}
 		}
 	}
 

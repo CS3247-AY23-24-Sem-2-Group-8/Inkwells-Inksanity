@@ -3,8 +3,8 @@
 #include "MapGeneration.h"
 #include "MapGenerator/GridMap.h"
 
-constexpr int32 Rows = 8;
-constexpr int32 Cols = 10;
+constexpr uint32_t Rows = 8;
+constexpr uint32_t Cols = 10;
 
 void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, const int32 NumPaths,
 	const double WidthScale, const double HeightScale, TArray<FVector2D>& Vertices, TArray<FVector2D>& Edges)
