@@ -49,7 +49,7 @@ int32 UMapGeneration::GenerateNodeType(const FVector2D Node, const TArray<int32>
 
 int32 UMapGeneration::GetNodeLevel(const FVector2D Node, const int32 Height, const double HeightScale)
 {
-	const double BlockHeight = Height * HeightScale / Cols;
+	const double BlockHeight = Height * HeightScale / Rows;
 
 	return static_cast<int32>(std::floor(Node.Y / BlockHeight));
 }
