@@ -78,6 +78,8 @@ std::tuple<TArray<FVector2D>, TArray<FVector2D>> FGridMap::GenerateGraph() const
 {
 	TArray<FVector2D> Vertices = TArray<FVector2D>();
 	TArray<FVector2D> Edges = TArray<FVector2D>();
+	const FVector2D BossNode = FVector2D(BlockWidth * Rows * 0.5, (BlockHeight - 0.5) * Cols);
+	Vertices.Add(BossNode);
 
 	std::random_device RandomDevice;
 	std::mt19937 Generator(RandomDevice());
@@ -104,6 +106,14 @@ std::tuple<TArray<FVector2D>, TArray<FVector2D>> FGridMap::GenerateGraph() const
 	for (const auto& [Key, Value] : EdgeList)
 	{
 		const int FromIndex = IndexMap[Key];
+		std::tuple<uint32_t, uint32_t> Coords = UnhashBlock(Key);
+
+		// connect to boss node
+		if (const uint32_t Col = std::get<1>(Coords); Col == Cols - 1)
+		{
+			Edges.Add(FVector2D(FromIndex, 0));
+		}
+		
 		for (const uint64_t Node : Value)
 		{
 			const int ToIndex = IndexMap[Node];

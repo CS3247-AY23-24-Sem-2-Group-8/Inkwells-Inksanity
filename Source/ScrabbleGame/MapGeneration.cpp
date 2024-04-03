@@ -47,3 +47,8 @@ int32 UMapGeneration::GetNodeLevel(const FVector2D Node, const int32 Height, con
 
 	return static_cast<int32>(std::floor(Node.Y / BlockHeight));
 }
+
+bool UMapGeneration::IsBossNode(const FVector2D Node, const int32 Height, const double HeightScale)
+{
+	return GetNodeLevel(Node, Height, HeightScale) == Rows;
+}
