@@ -28,4 +28,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
 	static int32 GetNodeLevel(const FVector2D Node, const int32 Height, const double HeightScale);
+
+	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
+	static bool IsBossNode(const FVector2D Node, const int32 Height, const double HeightScale);
 };

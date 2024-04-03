@@ -3,8 +3,8 @@
 #include "MapGeneration.h"
 #include "MapGenerator/GridMap.h"
 
-constexpr int32 Rows = 8;
-constexpr int32 Cols = 10;
+constexpr uint32_t Rows = 8;
+constexpr uint32_t Cols = 10;
 
 void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, const int32 NumPaths,
 	const double WidthScale, const double HeightScale, TArray<FVector2D>& Vertices, TArray<FVector2D>& Edges)
@@ -52,4 +52,9 @@ int32 UMapGeneration::GetNodeLevel(const FVector2D Node, const int32 Height, con
 	const double BlockHeight = Height * HeightScale / Cols;
 
 	return static_cast<int32>(std::floor(Node.Y / BlockHeight));
+}
+
+bool UMapGeneration::IsBossNode(const FVector2D Node, const int32 Height, const double HeightScale)
+{
+	return GetNodeLevel(Node, Height, HeightScale) == Rows;
 }

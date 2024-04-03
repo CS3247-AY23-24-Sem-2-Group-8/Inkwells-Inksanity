@@ -10,6 +10,7 @@ private:
 	
 	std::random_device DefaultSeed;
 
+	// the key represents the start point while the vector represents all the end points.
 	std::unordered_map<uint64_t, std::vector<uint64_t>> EdgeList = std::unordered_map<uint64_t, std::vector<uint64_t>>();
 
 	std::set<uint64_t> NodeList = std::set<uint64_t>();
