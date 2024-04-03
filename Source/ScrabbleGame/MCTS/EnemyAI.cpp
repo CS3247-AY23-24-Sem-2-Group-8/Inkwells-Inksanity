@@ -33,7 +33,7 @@ bool FScrabbleGameBoard::IsGoal(const FBoardState* State)
 
 FBoardAction* FEnemyAI::Search(FBoardState* State)
 {
-	if (IsTerminal(State)) return nullptr;
+	if (!Dictionary->IsValidPrefix(State->CurrentWord.c_str())) return nullptr;
 	if (Problem->IsGoal(State)) return nullptr;
 
 	MCTSNode<FBoardAction, FBoardState>* Root = new MCTSNode<FBoardAction, FBoardState>(nullptr, nullptr, State, 0, 0);
