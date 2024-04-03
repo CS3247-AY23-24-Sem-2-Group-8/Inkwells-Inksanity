@@ -41,7 +41,7 @@ FBoardAction* FEnemyAI::Search(FBoardState* State)
 
 	const auto Start = std::chrono::steady_clock::now();
 	auto Current = Start;
-	while (std::chrono::duration_cast<std::chrono::seconds>(Current - Start).count() < MaxTimeForSearch)
+	while (std::chrono::duration_cast<std::chrono::milliseconds>(Current - Start).count() < MaxTimeForSearch * 1000)
 	{
 		MCTSNode<FBoardAction, FBoardState>* Leaf = this->Select(Root);
 		MCTSNode<FBoardAction, FBoardState>* Child = this->Expand(Leaf);
