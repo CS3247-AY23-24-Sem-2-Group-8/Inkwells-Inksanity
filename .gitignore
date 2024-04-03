@@ -72,6 +72,7 @@ Saved/*
 Intermediate/*
 Plugins/*/Intermediate/*
 cmake-build-debug/*
+CMakeLists.txt
 
 # Cache files for the editor to use
 DerivedDataCache/*
