@@ -27,9 +27,9 @@ void UScrabbleEnemyAI::SetBoard(TArray<FBoardTile> Tiles)
 		std::pair<char, int>* ConvertedTile = new std::pair<char, int>(Tile.Letter[0], Tile.Point);
 		tiles.push_back(ConvertedTile);
 	}
-	BoardState* State = new BoardState("", tiles);
-	ScrabbleGameBoard* Board = new ScrabbleGameBoard(State);
-	EnemyAI = new class EnemyAI(Board, ThresholdToStop, Dictionary, MaxTimeToSearch);
+	FBoardState* State = new FBoardState("", tiles);
+	FScrabbleGameBoard* Board = new FScrabbleGameBoard(State);
+	EnemyAI = new FEnemyAI(Board, ThresholdToStop, Dictionary, MaxTimeToSearch);
 }
 
 void UScrabbleEnemyAI::GetNextAction()
@@ -43,7 +43,7 @@ void UScrabbleEnemyAI::GetNextAction()
 		if (this == nullptr) return;
 		FString Character = "";
 		int Value = -1;
-		const BoardAction* Action = EnemyAI->GetNextAction();
+		const FBoardAction* Action = EnemyAI->GetNextAction();
 		if (Action == nullptr) return OnFinish(Character, Value);
 		
 		char String[2] = "\0";

@@ -2,22 +2,22 @@
 
 #include <chrono>
 
-std::deque<BoardAction*>* ScrabbleGameBoard::Actions(BoardState* State)
+std::deque<FBoardAction*>* FScrabbleGameBoard::Actions(FBoardState* State)
 {
 	return State->Actions();
 }
 
-BoardState* ScrabbleGameBoard::Result(BoardState* State, BoardAction* Action)
+FBoardState* FScrabbleGameBoard::Result(FBoardState* State, FBoardAction* Action)
 {
 	return State->Result(Action);
 }
 
-double ScrabbleGameBoard::Value(BoardState* State)
+double FScrabbleGameBoard::Value(FBoardState* State)
 {
 	return State->PointValue;
 }
 
-double ScrabbleGameBoard::Cost(BoardState* FromState, BoardAction* Action, BoardState* ToState)
+double FScrabbleGameBoard::Cost(FBoardState* FromState, FBoardAction* Action, FBoardState* ToState)
 {
 	if (FromState->Result(Action) == nullptr || FromState->Result(Action) != ToState)
 	{
@@ -26,32 +26,32 @@ double ScrabbleGameBoard::Cost(BoardState* FromState, BoardAction* Action, Board
 	return 1;
 }
 
-bool ScrabbleGameBoard::IsGoal(const BoardState* State)
+bool FScrabbleGameBoard::IsGoal(const FBoardState* State)
 {
 	return State->Letters.empty();
 }
 
-BoardAction* EnemyAI::Search(BoardState* State)
+FBoardAction* FEnemyAI::Search(FBoardState* State)
 {
 	if (IsTerminal(State)) return nullptr;
 	if (Problem->IsGoal(State)) return nullptr;
 
-	MCTSNode<BoardAction, BoardState>* Root = new MCTSNode<BoardAction, BoardState>(nullptr, nullptr, State, 0, 0);
+	MCTSNode<FBoardAction, FBoardState>* Root = new MCTSNode<FBoardAction, FBoardState>(nullptr, nullptr, State, 0, 0);
 	Expand(Root);
 
 	const auto Start = std::chrono::steady_clock::now();
 	auto Current = Start;
 	while (std::chrono::duration_cast<std::chrono::seconds>(Current - Start).count() < MaxTimeForSearch)
 	{
-		MCTSNode<BoardAction, BoardState>* Leaf = this->Select(Root);
-		MCTSNode<BoardAction, BoardState>* Child = this->Expand(Leaf);
+		MCTSNode<FBoardAction, FBoardState>* Leaf = this->Select(Root);
+		MCTSNode<FBoardAction, FBoardState>* Child = this->Expand(Leaf);
 		const double Value = this->Simulate(Child);
 		Backprop(Child, Value);
 		Current = std::chrono::steady_clock::now();
 	}
 
 	double MaxUtility = -std::numeric_limits<double>::infinity();
-	const MCTSNode<BoardAction, BoardState>* BestChild = nullptr;
+	const MCTSNode<FBoardAction, FBoardState>* BestChild = nullptr;
 	for (const auto Child : *(Root->Children))
 	{
 		if (Child->Utility <= MaxUtility) continue;
@@ -65,7 +65,7 @@ BoardAction* EnemyAI::Search(BoardState* State)
 	return BestChild->Action;
 }
 
-double EnemyAI::Ucb(MCTSNode<BoardAction, BoardState>* Node, const double Confidence)
+double FEnemyAI::Ucb(MCTSNode<FBoardAction, FBoardState>* Node, const double Confidence)
 {
 	double Utility = Node->Utility;
 	if (Node->NumVisits == 0) Utility = std::numeric_limits<double>::infinity();
@@ -76,7 +76,7 @@ double EnemyAI::Ucb(MCTSNode<BoardAction, BoardState>* Node, const double Confid
 	return Utility;
 }
 
-double EnemyAI::Utility(const BoardState* State) const
+double FEnemyAI::Utility(const FBoardState* State) const
 {
 	double Utility = State->PointValue;
 	const FString Word = State->CurrentWord.c_str();
@@ -86,12 +86,12 @@ double EnemyAI::Utility(const BoardState* State) const
 	return Utility;
 }
 
-MCTSNode<BoardAction, BoardState>* EnemyAI::Select(MCTSNode<BoardAction, BoardState>* Node)
+MCTSNode<FBoardAction, FBoardState>* FEnemyAI::Select(MCTSNode<FBoardAction, FBoardState>* Node)
 {
 	if (Node->Children == nullptr || Node->Children->empty()) return Node;
 
 	double Value = -1;
-	MCTSNode<BoardAction, BoardState>* BestChild = Node;
+	MCTSNode<FBoardAction, FBoardState>* BestChild = Node;
 		
 	for (const auto Child : *(Node->Children))
 	{
@@ -104,25 +104,25 @@ MCTSNode<BoardAction, BoardState>* EnemyAI::Select(MCTSNode<BoardAction, BoardSt
 	return BestChild;
 }
 
-MCTSNode<BoardAction, BoardState>* EnemyAI::Expand(MCTSNode<BoardAction, BoardState>* Node)
+MCTSNode<FBoardAction, FBoardState>* FEnemyAI::Expand(MCTSNode<FBoardAction, FBoardState>* Node)
 {
 	if (this->Problem->IsTerminal(Node->State) || Node->UntriedActions->size() == 0) return Node;
 
 	while (Node->UntriedActions->size() > 0)
 	{
-		BoardAction* NextAction = Node->UntriedActions->front();
+		FBoardAction* NextAction = Node->UntriedActions->front();
 		Node->UntriedActions->pop_front();
-		BoardState* NextState = Node->State->Result(NextAction);
-		MCTSNode<BoardAction, BoardState>* NewNode = new MCTSNode(Node, NextAction, NextState, 0, 1);
+		FBoardState* NextState = Node->State->Result(NextAction);
+		MCTSNode<FBoardAction, FBoardState>* NewNode = new MCTSNode(Node, NextAction, NextState, 0, 1);
 		Node->Children->push_back(NewNode);
 	}
 
 	return this->Select(Node);
 }
 
-double EnemyAI::Simulate(MCTSNode<BoardAction, BoardState>* ChildNode)
+double FEnemyAI::Simulate(MCTSNode<FBoardAction, FBoardState>* ChildNode)
 {
-	MCTSNode<BoardAction, BoardState>* Node = ChildNode;
+	MCTSNode<FBoardAction, FBoardState>* Node = ChildNode;
 	while (!IsTerminal(Node->State))
 	{
 		const int Length = Node->State->Actions()->size();
@@ -132,15 +132,15 @@ double EnemyAI::Simulate(MCTSNode<BoardAction, BoardState>* ChildNode)
 
 		// get random action valid prefix
 		const int RandomChildIndex = Distribution(RNG);
-		BoardAction* Action = Node->State->Actions()->at(RandomChildIndex);
-		BoardState* State = Node->State->Result(Action);
+		FBoardAction* Action = Node->State->Actions()->at(RandomChildIndex);
+		FBoardState* State = Node->State->Result(Action);
 		Node = new MCTSNode(Node, Action, State, 0, 1);
 	}
 	const double Value = this->Utility(Node->State);
 	return Value;
 }
 
-void EnemyAI::Backprop(MCTSNode<BoardAction, BoardState>* Node, const double Utility)
+void FEnemyAI::Backprop(MCTSNode<FBoardAction, FBoardState>* Node, const double Utility)
 {
 
 	if (Utility > 0) Node->Utility += Utility;
@@ -148,7 +148,7 @@ void EnemyAI::Backprop(MCTSNode<BoardAction, BoardState>* Node, const double Uti
 	if (Node->Parent != nullptr) Backprop(Node->Parent, Utility);
 }
 
-bool EnemyAI::IsTerminal(const BoardState* State) const
+bool FEnemyAI::IsTerminal(const FBoardState* State) const
 {
 	if (Dictionary == nullptr) return false;
 	return Dictionary->IsValidWord(State->CurrentWord.c_str()) || State->IsTerminal();
