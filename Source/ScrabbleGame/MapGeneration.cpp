@@ -3,10 +3,13 @@
 #include "MapGeneration.h"
 #include "MapGenerator/GridMap.h"
 
+constexpr int32 Rows = 8;
+constexpr int32 Cols = 10;
+
 void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, const int32 NumPaths,
 	const double WidthScale, const double HeightScale, TArray<FVector2D>& Vertices, TArray<FVector2D>& Edges)
 {
-	const FGridMap GridMap = FGridMap(8, 16, Width, Height, NumPaths, WidthScale, HeightScale);
+	const FGridMap GridMap = FGridMap(Rows, Cols, Width, Height, WidthScale, HeightScale, NumPaths);
 	std::tuple<TArray<FVector2D>, TArray<FVector2D>> Graph = GridMap.GenerateGraph();
 
 	Vertices = std::get<0>(Graph);
@@ -36,4 +39,11 @@ int32 UMapGeneration::GenerateNodeType(const FVector2D Node, const TArray<int32>
 	std::piecewise_constant_distribution<> EventSelector(Events.begin(), Events.end(),Probabilities.begin());
 	
 	return std::floor(EventSelector(NumberGenerator));
+}
+
+int32 UMapGeneration::GetNodeLevel(const FVector2D Node, const int32 Height, const double HeightScale)
+{
+	const double BlockHeight = Height * HeightScale / Cols;
+
+	return static_cast<int32>(std::floor(Node.Y / BlockHeight));
 }
