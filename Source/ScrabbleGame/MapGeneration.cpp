@@ -29,6 +29,12 @@ int32 UMapGeneration::GenerateNodeType(const FVector2D Node, const TArray<int32>
 {
 	std::random_device DefaultSeed;
 	std::mt19937 NumberGenerator(DefaultSeed());
+	std::vector<int32> ProbabilitiesVector;
+
+	for (auto Probability: Probabilities)
+	{
+		ProbabilitiesVector.push_back(Probability);
+	}
 
 	std::vector<double> Events(Probabilities.Num() + 1);
 	int32 StartNum = -1;
@@ -36,7 +42,7 @@ int32 UMapGeneration::GenerateNodeType(const FVector2D Node, const TArray<int32>
 
 	std::ranges::generate(Events.begin(), Events.end(),[&StartNum, &Step]{ return StartNum += Step; });
 
-	std::piecewise_constant_distribution<> EventSelector(Events.begin(), Events.end(),Probabilities.begin());
+	std::piecewise_constant_distribution<> EventSelector(Events.begin(), Events.end(),ProbabilitiesVector.begin());
 	
 	return std::floor(EventSelector(NumberGenerator));
 }
