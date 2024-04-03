@@ -56,7 +56,7 @@ void FGridMap::CreatePaths(const uint32_t NumPaths)
 				!(CurrentCol == 0 && Increment == -1) &&
 				!(CurrentCol == Cols - 1 && Increment == 1))
 			{
-				CurrentCol += NextSquare(RandomNumberGenerator);
+				CurrentCol += Increment;
 			}
 
 			uint64_t CurrentBlock = HashBlock(CurrentRow, CurrentCol);
