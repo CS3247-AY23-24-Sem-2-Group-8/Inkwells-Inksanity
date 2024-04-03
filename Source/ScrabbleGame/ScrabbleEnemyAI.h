@@ -48,5 +48,5 @@ private:
 	UScrabbleDictionary* Dictionary;
 	double ThresholdToStop;
 	double MaxTimeToSearch;
-	EnemyAI* EnemyAI;
+	FEnemyAI* EnemyAI;
 };

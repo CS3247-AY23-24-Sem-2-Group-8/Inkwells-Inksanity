@@ -1,127 +1,132 @@
 ﻿#pragma once
+#include <deque>
 
 struct Action
 {
 	virtual ~Action() = default;
-	virtual bool operator ==(const Action& other) const = 0;
+	virtual bool operator ==(const Action& Other) const = 0;
 };
 
 struct State
 {
 	virtual ~State() = default;
-	template <class T, class U, class = typename std::enable_if<std::is_base_of_v<Action, T>>::type,
-		 class = typename std::enable_if<std::is_base_of_v<State, U>>::type>
-	U* result(T* action);
+	template <class T, class U, class = std::enable_if_t<std::is_base_of_v<Action, T>>,
+		 class = std::enable_if_t<std::is_base_of_v<State, U>>>
+	U* Result(T* action);
 
-	template <class T, class U, class = typename std::enable_if<std::is_base_of_v<Action, T>>::type,
-		class = typename std::enable_if<std::is_base_of_v<State, U>>::type>
-	std::queue<T*>* untriedActions() const;
+	template <class T, class U, class = std::enable_if_t<std::is_base_of_v<Action, T>>,
+		class = std::enable_if_t<std::is_base_of_v<State, U>>>
+	std::queue<T*>* UntriedActions() const;
 
-	virtual bool isTerminal() const = 0;
+	virtual bool IsTerminal() const = 0;
 };
 
-template <class T, class U, class = typename std::enable_if<std::is_base_of_v<Action, T>>::type,
-	class = typename std::enable_if<std::is_base_of_v<State, U>>::type>
+template <class T, class U, class = std::enable_if_t<std::is_base_of_v<Action, T>>,
+	class = std::enable_if_t<std::is_base_of_v<State, U>>>
 class Problem
 {
 public:
-	U* initialState;
-	U* goalState;
+	U* InitialState;
+	U* GoalState;
 	
-	Problem(U* initialState, U* goalState)
+	Problem(U* InitialState, U* GoalState)
 	{
-		this->initialState = initialState;
-		this->goalState = goalState;
+		this->InitialState = InitialState;
+		this->GoalState = GoalState;
 	};
 
-	virtual std::deque<T*>* actions(U* state) = 0;
-	virtual U* result(U* state, T* action) = 0;
-	virtual double value(U* state) = 0;
-	virtual double cost(U* fromState, T* action, U* toState) = 0;
+	virtual ~Problem() = default;
 
-	bool isGoal(U* state) {
-		return state == goalState;
+	virtual std::deque<T*>* Actions(U* State) = 0;
+	virtual U* Result(U* State, T* Action) = 0;
+	virtual double Value(U* State) = 0;
+	virtual double Cost(U* FromState, T* Action, U* ToState) = 0;
+
+	bool IsGoal(U* State) {
+		return State == GoalState;
 	};
 
-	double pathCost(double currentCost, U* state1, T* action, U* state2)
+	double PathCost(double CurrentCost, U* State1, T* Action, U* State2)
 	{
-		return currentCost + 1;
+		return CurrentCost + 1;
 	};
 
-	bool isTerminal(U* state)
+	bool IsTerminal(U* State)
 	{
-		return isGoal(state) || this->actions(state)->empty();
+		return IsGoal(State) || this->Actions(State)->empty();
 	}
 };
 
-template <class T, class U, class = typename std::enable_if<std::is_base_of_v<Action, T>>::type,
-	class = typename std::enable_if<std::is_base_of_v<State, U>>::type>
+template <class T, class U, class = std::enable_if_t<std::is_base_of_v<Action, T>>,
+	class = std::enable_if_t<std::is_base_of_v<State, U>>>
 struct MCTSNode
 {
-	MCTSNode* parent;
-	T* action;
-	U* state;
-	double utility;
-	int numVisits;
-	std::vector<MCTSNode*>* children;
-	std::deque<T*>* untriedActions;
+	MCTSNode* Parent;
+	T* Action;
+	U* State;
+	double Utility;
+	int NumVisits;
+	std::vector<MCTSNode*>* Children;
+	std::deque<T*>* UntriedActions;
 
-	MCTSNode(MCTSNode* parent = nullptr, T* action = nullptr, U* state = nullptr, double utility = 0, int numVisits = 0)
+	MCTSNode(MCTSNode* Parent = nullptr, T* Action = nullptr, U* State = nullptr, double Utility = 0, int NumVisits = 0)
 	{
-		this->parent = parent;
-		this->action = action;
-		this->state = state;
-		this->utility = utility;
-		this->numVisits = numVisits;
-		this->children = new std::vector<MCTSNode*>();
-		this->untriedActions = state->Actions();
+		this->Parent = Parent;
+		this->Action = Action;
+		this->State = State;
+		this->Utility = Utility;
+		this->NumVisits = NumVisits;
+		this->Children = new std::vector<MCTSNode*>();
+		this->UntriedActions = State->Actions();
 	};
 
 	~MCTSNode()
 	{
-		delete state;
-		delete action;
-		for (auto* child : children) {
-			delete child;
+		delete State;
+		delete Action;
+		for (auto* Child : Children) {
+			delete Child;
 		}
-		delete children;
-		while (!untriedActions->empty()) {
-			delete untriedActions->front();
-			untriedActions->pop();
+		delete Children;
+		while (!UntriedActions->empty()) {
+			delete UntriedActions->front();
+			UntriedActions->pop();
 		}
-		delete untriedActions();
+		delete UntriedActions();
 	}
 };
 
-template <class T, class U, class = typename std::enable_if<std::is_base_of_v<Action, T>>::type,
-	class = typename std::enable_if<std::is_base_of_v<State, U>>::type>
+template <class T, class U, class = std::enable_if_t<std::is_base_of_v<Action, T>>,
+	class = std::enable_if_t<std::is_base_of_v<State, U>>>
 class MCTSAgent
 {
 public:
-	MCTSAgent(Problem<T, U>* problem)
+	MCTSAgent(Problem<T, U>* Problem)
 	{
-		this->problem = problem;
-		this->currentState = NULL;
-		this->currentAction = NULL;
+		this->Problem = Problem;
+		this->CurrentState = NULL;
+		this->CurrentAction = NULL;
 	};
 
-	T* getNextAction()
+	virtual ~MCTSAgent() = default;
+
+	T* GetNextAction()
 	{
-		T* action = this->search(currentState);
-		this->currentState = currentState->result(action);
-		this->currentAction = action;
-		return action;
+		T* Action = this->Search(CurrentState);
+		this->CurrentState = CurrentState->Result(Action);
+		this->CurrentAction = Action;
+		return Action;
 	};
 
-	virtual T* search(U* state) = 0;
-	virtual double ucb(MCTSNode<T, U>* node, double cost) = 0;
-	virtual MCTSNode<T, U>* select(MCTSNode<T, U>* node) = 0;
-	virtual MCTSNode<T, U>* expand(MCTSNode<T, U>* node) = 0;
-	virtual double simulate(MCTSNode<T, U>* childNode) = 0;
-	virtual void backprop(MCTSNode<T, U>* node, double utility) = 0;
+	virtual T* Search(U* State) = 0;
+	virtual double Ucb(MCTSNode<T, U>* Node, double Cost) = 0;
+	virtual MCTSNode<T, U>* Select(MCTSNode<T, U>* Node) = 0;
+	virtual MCTSNode<T, U>* Expand(MCTSNode<T, U>* Node) = 0;
+	virtual double Simulate(MCTSNode<T, U>* ChildNode) = 0;
+	virtual void Backprop(MCTSNode<T, U>* Node, double Utility) = 0;
 
 protected:
-	Problem<T, U>* problem;
-	U* currentState;
-	T* currentAction;
+	Problem<T, U>* Problem;
+	U* CurrentState;
+	T* CurrentAction;
 };
