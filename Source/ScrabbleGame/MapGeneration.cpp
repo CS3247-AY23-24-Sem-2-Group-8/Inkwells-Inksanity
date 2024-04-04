@@ -56,5 +56,5 @@ int32 UMapGeneration::GetNodeLevel(const FVector2D Node, const int32 Height, con
 
 bool UMapGeneration::IsBossNode(const FVector2D Node, const int32 Height, const double HeightScale)
 {
-	return GetNodeLevel(Node, Height, HeightScale) == Rows;
+	return GetNodeLevel(Node, Height, HeightScale) == Rows - 1;
 }
