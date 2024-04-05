@@ -47497,6 +47497,7 @@ elitist
 elitists
 elixir
 elixirs
+elizabeth
 elk
 elkhound
 elkhounds
@@ -68991,6 +68992,7 @@ hizzoner
 hizzoners
 hm
 hmm
+hmuu
 ho
 hoactzin
 hoactzines
@@ -83836,6 +83838,7 @@ lentiviruses
 lento
 lentoid
 lentos
+leon
 leone
 leones
 leonine
@@ -85382,6 +85385,7 @@ lixiviation
 lixiviations
 lixivium
 lixiviums
+liz
 lizard
 lizards
 llama
@@ -86353,6 +86357,7 @@ lubricity
 lubricous
 lucarne
 lucarnes
+lucas
 luce
 lucence
 lucences
@@ -93714,6 +93719,7 @@ modestest
 modesties
 modestly
 modesty
+moe
 modi
 modica
 modicum
@@ -96311,6 +96317,7 @@ myasthenia
 myasthenias
 myasthenic
 myasthenics
+myatt
 mycele
 myceles
 mycelia
@@ -108308,7 +108315,6 @@ parietes
 parimutuel
 paring
 parings
-paris
 parises
 parish
 parishes
@@ -131828,6 +131834,8 @@ rows
 rowth
 rowths
 royal
+royale
+royales
 royalism
 royalisms
 royalist
@@ -172595,6 +172603,7 @@ zizzle
 zizzled
 zizzles
 zizzling
+zhengze
 zlote
 zloties
 zloty
