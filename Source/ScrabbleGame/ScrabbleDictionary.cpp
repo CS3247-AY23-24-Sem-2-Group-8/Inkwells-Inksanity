@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ScrabbleDictionary.h"
+
+#include "GameplayTagContainerNetSerializer.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "Logging/StructuredLog.h" 
 
 // constructor but not sure if it needs to be used
 UScrabbleDictionary::UScrabbleDictionary()
@@ -26,7 +29,11 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FStr
 
 	for (FString& Word : ParsedWords)
 	{
-		if (Word.Len() < MinWordLength || Word.Len() > MAX_WORD_LENGTH) continue;
+		if (Word.Len() < MinWordLength || Word.Len() > MAX_WORD_LENGTH)
+		{
+			UE_LOGFMT(LogTemp, Log, "{0}", Word);
+			continue;
+		}
 		
 		Dict->Trie.InsertWord(TCHAR_TO_UTF8(*Word));
 	}
