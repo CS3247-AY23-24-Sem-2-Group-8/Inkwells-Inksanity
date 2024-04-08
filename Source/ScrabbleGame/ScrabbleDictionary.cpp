@@ -1,10 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ScrabbleDictionary.h"
-
-#include "GameplayTagContainerNetSerializer.h"
 #include "Kismet/KismetStringLibrary.h"
-#include "Logging/StructuredLog.h" 
+#include "Logging/StructuredLog.h"
 
 // constructor but not sure if it needs to be used
 UScrabbleDictionary::UScrabbleDictionary()
@@ -25,7 +23,8 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FStr
 	}
 
 	// create an array of words from the text
-	TArray<FString> ParsedWords = UKismetStringLibrary::ParseIntoArray(ParsedText, "\r\n");
+	TArray<FString> ParsedWords = UKismetStringLibrary::ParseIntoArray(ParsedText, NEWLINE);
+
 	for (FString& Word : ParsedWords)
 	{
 		if (Word.Len() < MinWordLength || Word.Len() > MAX_WORD_LENGTH)
