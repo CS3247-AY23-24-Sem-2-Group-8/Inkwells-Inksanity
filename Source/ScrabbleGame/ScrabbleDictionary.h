@@ -8,6 +8,14 @@
 
 #define MAX_WORD_LENGTH 16
 
+#ifdef _WIN32
+	#define NEWLINE "\r\n"
+#elif defined macintosh // OS 9
+	#define NEWLINE "\r"
+#else
+	#define NEWLINE "\n" // Mac OS X uses \n
+#endif
+
 /**
  * 
  */
