@@ -24,11 +24,9 @@ public:
 		const int32 Width, const int32 Height, const double WidthScale, const double HeightScale);
 
 	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
-	static int32 GenerateNodeType(const FVector2D Node, const TArray<int32> Probabilities);
+	static int32 GenerateNodeType(const FVector2D Node, const int32 Height, const double HeightScale,
+		const TArray<int32> Probabilities);
 
 	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
 	static int32 GetNodeLevel(const FVector2D Node, const int32 Height, const double HeightScale);
-
-	UFUNCTION(BlueprintCallable, Category = "MapGeneration")
-	static bool IsBossNode(const FVector2D Node, const int32 Height, const double HeightScale);
 };
