@@ -25,8 +25,7 @@ UScrabbleDictionary* UScrabbleDictionary::ConstructScrabbleDictionary(const FStr
 	}
 
 	// create an array of words from the text
-	TArray<FString> ParsedWords = UKismetStringLibrary::ParseIntoArray(ParsedText, "\n");
-
+	TArray<FString> ParsedWords = UKismetStringLibrary::ParseIntoArray(ParsedText, "\r\n");
 	for (FString& Word : ParsedWords)
 	{
 		if (Word.Len() < MinWordLength || Word.Len() > MAX_WORD_LENGTH)
