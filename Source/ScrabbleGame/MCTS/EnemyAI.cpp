@@ -81,8 +81,8 @@ double FEnemyAI::Utility(const FBoardState* State) const
 	double Utility = State->PointValue;
 	const FString Word = State->CurrentWord.c_str();
 	
-	if (!Dictionary->IsValidPrefix(Word)) return -10000000;
-	if (!Dictionary->IsValidWord(Word)) Utility /= 3;
+	if (!Dictionary->IsValidPrefix(Word)) return -std::numeric_limits<double>::infinity();
+	if (Dictionary->IsValidWord(Word)) Utility = std::pow(Utility, 5);
 	return Utility;
 }
 
