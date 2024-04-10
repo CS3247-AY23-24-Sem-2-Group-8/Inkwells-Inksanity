@@ -44,7 +44,7 @@ bool UScrabbleDictionary::IsValidWord(const FString Word) const
 	return Trie.Contains(TCHAR_TO_UTF8(*Word));
 }
 
-bool UScrabbleDictionary::IsValidPrefix(FString Prefix) const
+bool UScrabbleDictionary::IsValidPrefix(const FString& Prefix) const
 {
 	return Trie.ContainsPrefix(TCHAR_TO_UTF8(*Prefix));
 }

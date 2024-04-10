@@ -33,7 +33,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "ScrabbleDictionary")
 	bool IsValidWord(const FString Word) const;
-	bool IsValidPrefix(FString Prefix) const;
+	bool IsValidPrefix(const FString& Prefix) const;
 
 	UFUNCTION(BlueprintCallable, Category = "ScrabbleDictionary")
 	static UScrabbleDictionary* ConstructScrabbleDictionary(const FString FileName, const int32 MinWordLength);
