@@ -2,6 +2,7 @@
 #include <random>
 #include <tuple>
 #include <set>
+#include <vector>
 
 struct FGridMap
 {

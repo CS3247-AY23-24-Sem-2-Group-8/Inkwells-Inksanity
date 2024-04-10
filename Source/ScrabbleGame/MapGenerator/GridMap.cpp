@@ -40,7 +40,6 @@ std::tuple<uint32_t, uint32_t> FGridMap::UnhashBlock(const uint64_t Hash)
 void FGridMap::CreatePaths(const uint32_t NumPaths)
 {
 	std::uniform_int_distribution<int> StartGenerator(0, Cols - 1);
-	std::uniform_int_distribution<int> NextSquare(-1, 1);
 
 	for (uint32_t i = 0; i < NumPaths; i++)
 	{
@@ -51,13 +50,30 @@ void FGridMap::CreatePaths(const uint32_t NumPaths)
 		
 		for (uint32_t CurrentRow = 1; CurrentRow < Rows - 1; CurrentRow++)
 		{
-			// find the index of the next square to travel to
-			if (const int32_t Increment = NextSquare(RandomNumberGenerator);
-				!(CurrentCol == 0 && Increment == -1) &&
-				!(CurrentCol == Cols - 1 && Increment == 1))
+			int LeftBound = -1;
+			int RightBound = 1;
+
+			if (CurrentCol == 0)
 			{
-				CurrentCol += Increment;
+				LeftBound = 0;
+			} else if (std::vector<uint64_t> To = EdgeList[HashBlock(CurrentRow - 1, CurrentCol - 1)];
+				std::find(To.begin(), To.end(), HashBlock(CurrentRow, CurrentCol)) != To.end())
+			{
+				LeftBound = 0;
 			}
+
+			if (CurrentCol == Cols - 1)
+			{
+				RightBound = 0;
+			} else if (std::vector<uint64_t> To = EdgeList[HashBlock(CurrentRow - 1, CurrentCol + 1)];
+				std::find(To.begin(), To.end(), HashBlock(CurrentRow, CurrentCol)) != To.end())
+			{
+				RightBound = 0;
+			}
+
+			std::uniform_int_distribution<int> NextSquare(LeftBound, RightBound);
+			
+			CurrentCol += NextSquare(RandomNumberGenerator);
 
 			uint64_t CurrentBlock = HashBlock(CurrentRow, CurrentCol);
 			
