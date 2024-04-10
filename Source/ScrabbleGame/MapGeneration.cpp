@@ -4,13 +4,21 @@
 #include "MapGenerator/GridMap.h"
 
 constexpr uint32_t Rows = 10;
-constexpr uint32_t Cols = 8;
+constexpr uint32_t Cols = 10;
 
 void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, const int32 NumPaths,
-	const double WidthScale, const double HeightScale, TArray<FVector2D>& Vertices, TArray<FVector2D>& Edges)
+	const double WidthScale, const double HeightScale, const TArray<int32> Probabilities,
+	TArray<FVector>& Vertices, TArray<FVector2D>& Edges)
 {
-	const FGridMap GridMap = FGridMap(Rows, Cols, Width, Height, WidthScale, HeightScale, NumPaths);
-	std::tuple<TArray<FVector2D>, TArray<FVector2D>> Graph = GridMap.GenerateGraph();
+	std::vector<int32> ProbabilitiesVector;
+	
+	for (auto Probability: Probabilities)
+	{
+		ProbabilitiesVector.push_back(Probability);
+	}
+	
+	FGridMap GridMap = FGridMap(Rows, Cols, Width, Height, WidthScale, HeightScale, NumPaths, ProbabilitiesVector);
+	const std::tuple<TArray<FVector>, TArray<FVector2D>> Graph = GridMap.GenerateGraph();
 
 	Vertices = std::get<0>(Graph);
 	Edges = std::get<1>(Graph);
