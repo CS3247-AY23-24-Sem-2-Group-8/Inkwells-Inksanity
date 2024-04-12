@@ -3,7 +3,7 @@
 #include "MapGeneration.h"
 #include "MapGenerator/GridMap.h"
 
-constexpr uint32_t Rows = 3;
+constexpr uint32_t Rows = 10;
 constexpr uint32_t Cols = 10;
 
 void UMapGeneration::GenerateCoordinates(const int32 Width, const int32 Height, const int32 NumPaths,
